@@ -1,3 +1,13 @@
+/**
+ * @file bst.hxx
+ * @author Maria Grazia Berni
+ * @brief Advanced Programming Project
+ * 
+ * 
+ *
+ * 
+ */
+
 #include <iostream> 
 #include <memory> 
 #include <algorithm> 
@@ -7,89 +17,228 @@
 
 #ifndef BST_HXX__
 #define BST_HXX__
+
+/**
+ * @brief  Class that implements a simple binary heap, without auto balance 
+ * @tparam K is the key value 
+ * @tparam V is the value stored in the node
+ * @tparam Compare is the comparing function, which has default value std::less<K>
+ */
 template <class K, class V, class Compare = std::less<K>>
 
 class bst{
     private:
-      
+
+      /**
+       * @brief Internal class to represent the nodes of the tree
+       */  
       class Node; 
-
+      /** Pointer to the rot of the tree */
       std::unique_ptr<Node> root; 
-
+      /** Size of the tree*/
       int sz = 0;
-
+      /**Iterator and Constant Iterator definded ad an external class */
       using Iterator = iterator<Node,typename std::pair<const K,V>>;
       using Const_Iterator = iterator<Node, const typename std::pair<const K,V> >;
-
+      /**
+       * @brief Private auxiliary function to deal with the elimination of the root 
+       *        when calling the erase function
+       */
       void del_root();
+      /**
+       * @brief Private auxiliary function to deal with the elimination of a node
+       *        with two children when calling the erase function 
+       * @param node the node to del 
+       */
 
       void del_node_with_two_children(Node* node);
+      /**
+       * @brief Private auxiliary function do deal with the elimination of a node 
+       *        with only one child when calling the erase function
+       * @param node the node to del 
+       */
 
       void del_node_with_one_child(Node* node);
+      /**
+       * @brief Private auxiliary function to deal eith the elimination of a node
+       *        that is a leaf, when calling the erase function
+       * @param node the node to del
+       */
 
       void del_leaf(Node* node); 
+
+      /**
+       * @brief auxiliary function to balance the tree
+       * @param nodes  auxiliary vector with ordered elements 
+       * @param firstId initial position in the vector 
+       * @param lastId last position in the vecto 
+       */
+      
+
+      void balanced_tree(std::vector<std::pair<K,V>>& nodes, int firstId, int lastId);
 
 
 
     public:
 
+      /**
+       * @brief Constructor of the tree that doesn't set the root
+       * @param c optional value of the function to compare nodes
+       *          if not present the compare function will be the 
+       *          default std::less<K> 
+       */
       bst(Compare c = Compare{}):compare{c} {}
+      /**
+       * @brief Constructor of the tree that sets the root
+       * @param value The value to store in the root 
+       * @param c optional value of the function to compare nodes
+       *          if not present the compare function will be the 
+       *          default std::less<K> 
+       */
 
       bst(std::pair<const K,V> value, Compare c = Compare{}): root{std::make_unique<Node>(value)},compare{c}
       {
         sz++;
       }
+      /**
+       * @brief Copy Constructor create a deep copy of the tree 
+       * @param other the tree to be copied 
+       * 
+       */
       bst(const bst& other); //copy constructor
+      /**
+       * @brief Copy Assignment 
+       * @param other the tree to be copied 
+       * @return bst&
+       */
 
       bst& operator=(const bst& other);
+      /**
+       * @brief Auxiliary recursive function to perform a deep copy in the 
+       *        copy assignment 
+       * @param node the node to be copied 
+       */
 
       void copy(const std::unique_ptr<Node>& node); 
+      /**
+       * @brief Move Constructor 
+       * @param other the tree to "move" 
+       */
 
       bst(bst&& other) noexcept: root{std::move(other.root)}, sz{std::move(other.sz)}{other.sz = 0;}
-
+      /**
+       * @brief Move assignment 
+       * @param other the tree to "move" 
+       * @return bst&
+       */
       bst& operator=(bst&& other);
-       
+      /**
+       * @brief the function that performs the comparative operation 
+       *        if not set in the construction, the default value is 
+       *        std::less<K> 
+       */
       Compare compare; 
-
+      /**
+       * @brief function to insert a std::pair<K,V> in the tree 
+       * @param data  a reference to the data to insert 
+       * @return  std::pair<Iterator, bool> , a pair containing the iterator
+       *          initialized with the position of the insertion of the node 
+       *          and a bool which is true if the element has been inserted,
+       *          false otherwise
+       */
+      
       std::pair<Iterator, bool> insert(const std::pair<const K,V>& data);
+       /**
+       * @brief    overloaded insert to deal with r-values 
+       * @param data  the data to insert 
+       * @return  std::pair<Iterator, bool> , a pair containing the iterator
+       *          initialized with the position of the insertion of the node 
+       *          and a bool which is true if the element has been inserted,
+       *          false otherwise
+       */
 
       std::pair<Iterator, bool> insert(std::pair<const K,V>&& data);
+      /**
+       * @brief function to deal with the insertion of elements 
+       *         cunstructing an std::pair in place 
+       * @param args to pass the key and value of the pair to construct
+       *             in place 
+       * @return  std::pair<Iterator, bool> , a pair containing the iterator
+       *          initialized with the position of the insertion of the node 
+       *          and a bool which is true if the element has been inserted,
+       *          false otherwise
+       */
 
       template< class... Types >
       std::pair<Iterator,bool> emplace(Types&&... args)
       {
           return insert(std::pair<const K,V>{std::forward<Types>(args)...});
       }
+      /**
+       * @brief function to get the size of the tree
+       * @retrns int 
+       */
 
       int get_Size(){return sz;}
+      /**
+       * @brief Function to get the root node of the tree 
+       * @return Node*
+       */
 
       Node* get_root() const {return root.get(); }
+      /**
+       * @brief function that return an iterator to the first element
+       * @return Iterator
+       */
 
       Iterator begin() noexcept
       {
         return Iterator{root->contain_min(root.get())};
       }
-
+      /**
+       * @brief function that returns a constant iterator to the first element 
+       * @return Const_Iterator
+       */
       Const_Iterator begin() const noexcept
       {
         return Const_Iterator{root->contain_min(root.get())};
       }
+      /**
+       * @brief function that returns a constant iterator to the first element 
+       * @return Const_Iterator
+       */
 
       Const_Iterator cbegin() const noexcept{
           
          return Const_Iterator{root->contain_min(root.get())};
       }
+       /**
+       * @brief function that return an iterator to the end ot the tree
+       *         so it returns nullptr
+       * @return Iterator{nullptr}
+       */
+
 
       Iterator end() noexcept
       {
           return Iterator{nullptr};
       }
+      /**
+       * @brief function that return an constant iterator to the end ot the tree
+       *         so it returns nullptr
+       * @return Const Iterator 
+       */
 
       Const_Iterator end() const noexcept
       {
          
         return Const_Iterator{nullptr};
       }
+      /**
+       * @brief function that return an constant iterator to the end ot the tree
+       *         so it returns nullptr
+       * @return Const Iterator 
+       */
 
        Const_Iterator cend() const noexcept
       {
@@ -97,22 +246,62 @@ class bst{
          return Const_Iterator{nullptr};
 
       }
+      /**
+       * @brief function to find if a value with a certain key is stored in the tree
+       * @param x the key of the node ot search 
+       * @return Iterator an iterator to the node with the key x, or end() in case 
+       *          the key is not sored in the tree
+       */
 
       Iterator find(const K& x);
+       /**
+       * @brief function to find if a value with a certain key is stored in the tree
+       * @param x the key of the node ot search 
+       * @return Cont_Iterator a constant iterator to the node with the key x, or end() in case 
+       *          the key is not sored in the tree
+       */
 
       Const_Iterator find(const K& x) const;
+      /**
+       * @brief operator that returns the value corresponding to a key 
+       * @param x the key to search 
+       * @return V
+       */
       
       V& operator[](const K& x);
+       
+      /**
+       * @brief operator that returns the value corresponding to a key 
+       * @param x the key to search 
+       * @return V
+       */
+      
 
       V& operator[](K&& x);
+      /**
+       * @brief  function to delete all the nodes of the tree
+       */
 
       void clear() noexcept {root.reset();}
+      /**
+       * @brief function to delete a node of the tree corresponding to a certain key
+       * @param x the key of the node to delete
+       */
 
       void erase(const K& x);
-
-      void balanced_tree(std::vector<std::pair<K,V>>& nodes, int firstId, int lastId);
+      
+      /**
+       * @brief function to balance the tree 
+       */
       
       void balance();
+
+      /**
+       * @brief friend function to print the tree
+       * @param os the output stream 
+       * @param x the tree to print 
+       * @return ostream 
+       */
 
       template <class k,class v,class c> 
       friend std::ostream& operator<<(std::ostream& os, const bst<k,v,c>& x);
@@ -503,8 +692,7 @@ void bst<K,V,Compare>::del_node_with_two_children(Node* node)
     }
     
   }
-
-  template <class K, class V, class Compare>
+ template <class K, class V, class Compare>
  void bst<K,V,Compare>::balanced_tree(std::vector<std::pair<K,V>>& ord_vect, int firstID, int lastID)
  {
     if(firstID > lastID)
@@ -519,7 +707,7 @@ void bst<K,V,Compare>::del_node_with_two_children(Node* node)
  }
 
 
- template <class K, class V, class Compare>
+template <class K, class V, class Compare>
  void bst<K,V,Compare>::balance(){
     Iterator it{this->begin()};
     Iterator end{this->end()};
@@ -538,6 +726,7 @@ void bst<K,V,Compare>::del_node_with_two_children(Node* node)
     
    
  }
+  
 
 
 
