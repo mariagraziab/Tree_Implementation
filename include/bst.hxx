@@ -2,10 +2,7 @@
  * @file bst.hxx
  * @author Maria Grazia Berni
  * @brief Advanced Programming Project
- * 
- * 
  *
- * 
  */
 
 #include <iostream> 
@@ -37,7 +34,7 @@ class bst{
       std::unique_ptr<Node> root; 
       /** Size of the tree*/
       int sz = 0;
-      /**Iterator and Constant Iterator definded ad an external class */
+      /**Iterator and Constant Iterator defined as an external class */
       using Iterator = iterator<Node,typename std::pair<const K,V>>;
       using Const_Iterator = iterator<Node, const typename std::pair<const K,V> >;
       /**
@@ -727,20 +724,6 @@ template <class K, class V, class Compare>
    
  }
   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

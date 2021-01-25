@@ -1,3 +1,9 @@
+/**
+ * @file node.hxx
+ * @author Maria Grazia Berni
+ * @brief Advanced Programming Project
+ *
+ */
 
 
 

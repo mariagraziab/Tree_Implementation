@@ -1,3 +1,12 @@
+/**
+ * @file iterator.hxx
+ * @author Maria Grazia Berni
+ * @brief Advanced Programming Project
+ *
+ */
+
+
+
 #ifndef ITERATOR_HXX__
 #define ITERATOR_HXX__
 

@@ -25,6 +25,8 @@ int main()
   bst<int,int> tree3{tree2};
   std::cout<<"tree3 in order visit"<<std::endl; 
   std::cout<<tree3<<std::endl;
+
+  std::cout<<"dereference operator:"<<tree3[5]<<std::endl;
   std::cout<<"Size of tree3 : ";
   std::cout<<tree3.get_Size()<<std::endl; 
 
@@ -130,6 +132,8 @@ newTree.erase(3);
  std::cout<<nt<<std::endl;
  nt.erase(7); 
  std::cout<<nt<<std::endl;
+
+
 
 
  
